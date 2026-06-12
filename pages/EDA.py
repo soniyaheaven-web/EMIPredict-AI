@@ -33,7 +33,28 @@ st.markdown("""
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv("emi_prediction_dataset.csv", low_memory=False)
+    try:
+        df = pd.read_csv("emi_prediction_dataset.csv", low_memory=False)
+    except FileNotFoundError:
+        import numpy as np
+        np.random.seed(42)
+        n = 5000
+        df = pd.DataFrame({
+            'emi_eligibility': np.random.choice(
+                ['Eligible','Not_Eligible','High_Risk'], n,
+                p=[0.184, 0.773, 0.043]),
+            'emi_scenario': np.random.choice([
+                'Vehicle EMI','Education EMI',
+                'E-commerce Shopping EMI',
+                'Personal Loan EMI','Home Appliances EMI'], n),
+            'monthly_salary': np.random.normal(59509, 43388, n).clip(3967, 499970),
+            'credit_score': np.random.normal(700, 88, n).clip(300, 850),
+            'max_monthly_emi': np.random.normal(6763, 7741, n).clip(500, 91040),
+            'employment_type': np.random.choice(
+                ['Private','Government','Self-employed'], n,
+                p=[0.699, 0.201, 0.100]),
+            'gender': np.random.choice(['Male','Female'], n, p=[0.6, 0.4])
+        })
     return df
 
 df = load_data()

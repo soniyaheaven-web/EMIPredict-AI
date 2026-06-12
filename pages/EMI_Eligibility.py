@@ -29,7 +29,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── Load model & encoders ─────────────────────────────
-model = joblib.load("emi_prediction_model.pkl")
+model = joblib.load("best_classification_model.pkl")
 label_encoders = joblib.load("label_encoders.pkl")
 
 st.subheader("🧑‍💼 Enter Customer Details")

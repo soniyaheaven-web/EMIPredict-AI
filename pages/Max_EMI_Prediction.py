@@ -124,34 +124,26 @@ with col_c:
 
 if predict_btn:
     input_data = pd.DataFrame({
-        'age': [age],
-        'gender': [gender],
-        'marital_status': [marital_status],
-        'education': [education],
-        'monthly_salary': [monthly_salary],
-        'employment_type': [employment_type],
-        'years_of_employment': [years_of_employment],
-        'company_type': [company_type],
-        'house_type': [house_type],
-        'monthly_rent': [monthly_rent],
-        'family_size': [family_size],
-        'dependents': [dependents],
-        'school_fees': [school_fees],
-        'college_fees': [college_fees],
-        'travel_expenses': [travel_expenses],
+        'age': [age], 'gender': [gender], 'marital_status': [marital_status],
+        'education': [education], 'monthly_salary': [monthly_salary],
+        'employment_type': [employment_type], 'years_of_employment': [years_of_employment],
+        'company_type': [company_type], 'house_type': [house_type],
+        'monthly_rent': [monthly_rent], 'family_size': [family_size],
+        'dependents': [dependents], 'school_fees': [school_fees],
+        'college_fees': [college_fees], 'travel_expenses': [travel_expenses],
         'groceries_utilities': [groceries_utilities],
         'other_monthly_expenses': [other_monthly_expenses],
-        'existing_loans': [existing_loans],
-        'current_emi_amount': [current_emi_amount],
-        'credit_score': [credit_score],
-        'bank_balance': [bank_balance],
-        'emergency_fund': [emergency_fund],
-        'emi_scenario': [emi_scenario],
-        'requested_amount': [requested_amount],
-        'requested_tenure': [requested_tenure]
+        'existing_loans': [existing_loans], 'current_emi_amount': [current_emi_amount],
+        'credit_score': [credit_score], 'bank_balance': [bank_balance],
+        'emergency_fund': [emergency_fund], 'emi_scenario': [emi_scenario],
+        'requested_amount': [requested_amount], 'requested_tenure': [requested_tenure]
     })
 
     prediction = reg_model.predict(input_data)[0]
+
+    # ✅ Fix — set prediction to 0 if savings are negative
+    if savings < 0:
+        prediction = 0
 
     st.markdown("---")
 
@@ -161,9 +153,7 @@ if predict_btn:
                 padding: 30px; border-radius: 20px;
                 border: 2px solid #7c3aed; text-align: center;'>
         <h2 style='color:#a855f7;'>🎯 Prediction Result</h2>
-        <h1 style='color:#22c55e; font-size:52px;'>
-            ₹{prediction:,.0f}
-        </h1>
+        <h1 style='color:#22c55e; font-size:52px;'>₹{prediction:,.0f}</h1>
         <h3 style='color:white;'>Maximum Safe Monthly EMI Amount</h3>
     </div>
     """, unsafe_allow_html=True)
@@ -179,28 +169,21 @@ if predict_btn:
     with col_c:
         st.metric("Available Savings", f"₹{savings:,.0f}")
 
-    # Advice
     st.markdown("<br>", unsafe_allow_html=True)
-    emi_percent = (prediction / monthly_salary * 100) if monthly_salary > 0 else 0
 
-    if emi_percent <= 30:
-        st.success(f"✅ EMI is {emi_percent:.1f}% of income — Financially Comfortable!")
-    elif emi_percent <= 50:
-        st.warning(f"⚠️ EMI is {emi_percent:.1f}% of income — Manageable but be careful!")
-    else:
-        st.error(f"❌ EMI is {emi_percent:.1f}% of income — High financial burden!")
-
+    # ✅ Advice — single clean block
     if savings < 0:
+        st.error("❌ Max EMI = ₹0 — Expenses already exceed income! Cannot afford any EMI.")
         st.warning("⚠️ Note: Expenses exceed income — financially risky!")
-
-        prediction = reg_model.predict(input_data)[0]
+    else:
+        emi_percent = (prediction / monthly_salary * 100) if monthly_salary > 0 else 0
+        if emi_percent <= 30:
+            st.success(f"✅ EMI is {emi_percent:.1f}% of income — Financially Comfortable!")
+            st.balloons()
+        elif emi_percent <= 50:
+            st.warning(f"⚠️ EMI is {emi_percent:.1f}% of income — Manageable but be careful!")
+            st.balloons()
+        else:
+            st.error(f"❌ EMI is {emi_percent:.1f}% of income — High financial burden!")
 
     st.markdown("---")
-
-    # ✅ Celebration effects based on EMI amount
-    emi_percent = (prediction / monthly_salary * 100) if monthly_salary > 0 else 0
-
-    if emi_percent <= 30:
-        st.balloons()        # 🎈 Balloon effect
-    elif emi_percent <= 50:
-        st.balloons()        # 🎈 Balloon only

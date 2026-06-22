@@ -45,8 +45,8 @@ st.markdown("""
 # Highlight best model
 def highlight_best(s):
     is_max = s == s.max()
-    return ['background-color: #14532d; color: white' if v
-            else 'color: white' for v in is_max]
+    return ['background-color: #14532d; color: white; font-weight:bold' if v
+            else 'background-color: #1e1e2f; color: white' for v in is_max]
 
 styled_clf = clf_df.set_index('Model').style\
     .apply(highlight_best)\
@@ -137,11 +137,11 @@ st.markdown("""
 
 def highlight_reg(s):
     if s.name in ['RMSE', 'MAE', 'MAPE (%)']:
-        is_best = s == s.min()  # Lower is better
+        is_best = s == s.min()
     else:
-        is_best = s == s.max()  # Higher is better
-    return ['background-color: #14532d; color: white' if v
-            else 'color: white' for v in is_best]
+        is_best = s == s.max()
+    return ['background-color: #14532d; color: white; font-weight:bold' if v
+            else 'background-color: #1e1e2f; color: white' for v in is_best]
 
 styled_reg = reg_df.set_index('Model').style\
     .apply(highlight_reg)\
